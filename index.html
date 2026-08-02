@@ -1105,14 +1105,14 @@
         @media (max-width: 768px) {
             .burger { display: flex; }
 
-            nav { padding: 0.85rem 1.2rem; }
+            nav { padding: 0.85rem 1.2rem; overflow: hidden; }
 
             nav.scrolled { padding: 0.6rem 1.2rem; }
 
             .nav-links {
                 position: fixed;
                 top: 0;
-                right: -280px;
+                right: 0;
                 width: 280px;
                 height: 100vh;
                 height: 100dvh;
@@ -1121,11 +1121,23 @@
                 flex-direction: column;
                 padding: 5.5rem 2rem 2rem;
                 gap: 0.5rem;
-                transition: right 0.5s cubic-bezier(0.16,1,0.3,1);
+                transform: translateX(100%);
+                transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
                 border-left: 1px solid var(--border);
+                z-index: 1001;
             }
 
-            .nav-links.active { right: 0; }
+            .nav-links.active { transform: translateX(0); }
+
+            .nav-backdrop {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                backdrop-filter: blur(4px);
+                z-index: 999;
+            }
+            .nav-backdrop.show { display: block; }
             .nav-links a { padding: 0.85rem 1rem; font-size: 1rem; border-radius: 12px; }
             .nav-links a:active { background: rgba(124,106,239,0.15); }
             .stats-grid { grid-template-columns: 1fr; }
@@ -1545,6 +1557,7 @@
             <span></span>
             <span></span>
         </div>
+        <div class="nav-backdrop" id="navBackdrop" onclick="closeMenu()"></div>
     </nav>
 
     <section class="hero">
@@ -1777,10 +1790,12 @@
         function toggleMenu() {
             document.getElementById('navLinks').classList.toggle('active');
             document.getElementById('burger').classList.toggle('active');
+            document.getElementById('navBackdrop').classList.toggle('show');
         }
         function closeMenu() {
             document.getElementById('navLinks').classList.remove('active');
             document.getElementById('burger').classList.remove('active');
+            document.getElementById('navBackdrop').classList.remove('show');
         }
 
         // Nav scroll
