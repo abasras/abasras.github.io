@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель — abasras</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #06060b;
+            --bg-2: #0c0c14;
+            --surface: rgba(255,255,255,0.03);
+            --surface-solid: #10101a;
+            --surface-hover: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.06);
+            --border-hover: rgba(255,255,255,0.12);
+            --text: #f0f0f5;
+            --text-muted: #6b6b80;
+            --accent: #7c6aef;
+            --accent-light: #a89cfe;
+            --green: #4ade80;
+            --red: #f87171;
+            --orange: #fb923c;
+            --blue: #6dd5fa;
+            --gradient: linear-gradient(135deg, #7c6aef, #a89cfe, #6dd5fa);
+            --radius: 14px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* --- LOGIN --- */
+        .login-screen {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .login-glow {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124,106,239,0.12), transparent 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            animation: pulse 6s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(20px);
+        }
+
+        .login-logo {
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: var(--gradient);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease infinite;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .login-subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-error {
+            color: var(--red);
+            font-size: 0.82rem;
+            margin-bottom: 1rem;
+            display: none;
+            padding: 0.7rem 1rem;
+            background: rgba(248,113,113,0.08);
+            border: 1px solid rgba(248,113,113,0.15);
+            border-radius: 10px;
+        }
+
+        /* --- FORM --- */
+        .form-group { margin-bottom: 1.1rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.45rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder { color: rgba(255,255,255,0.2); }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(124,106,239,0.1);
+        }
+
+        .form-group textarea { resize: vertical; min-height: 90px; }
+
+        /* --- BUTTONS --- */
+        .btn {
+            padding: 0.75rem 1.6rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(255,255,255,0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .btn:hover::after { opacity: 1; }
+
+        .btn-primary {
+            background: var(--gradient);
+            background-size: 200% 200%;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(124,106,239,0.25);
+            animation: gradientShift 4s ease infinite;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(124,106,239,0.35);
+        }
+
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.78rem; border-radius: 8px; }
+
+        .btn-danger {
+            background: rgba(248,113,113,0.1);
+            color: var(--red);
+            border: 1px solid rgba(248,113,113,0.15);
+        }
+
+        .btn-danger:hover { background: rgba(248,113,113,0.18); }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost:hover { color: var(--text); border-color: var(--border-hover); }
+
+        /* --- LAYOUT --- */
+        .app { display: none; min-height: 100vh; }
+        .app.active { display: flex; }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 260px;
+            background: var(--surface-solid);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.3rem;
+            font-weight: 900;
+            background: var(--gradient);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease infinite;
+            padding: 0 0.75rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            flex: 1;
+        }
+
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.65rem 0.85rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.25s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sidebar-link:hover {
+            color: var(--text);
+            background: var(--surface-hover);
+        }
+
+        .sidebar-link.active {
+            color: var(--text);
+            background: rgba(124,106,239,0.1);
+        }
+
+        .sidebar-link.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 60%;
+            background: var(--gradient);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .sidebar-link .icon {
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-link .badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 0.15rem 0.45rem;
+            border-radius: 50px;
+        }
+
+        .sidebar-footer {
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .sidebar-footer a {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.65rem 0.85rem;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: all 0.25s;
+            cursor: pointer;
+        }
+
+        .sidebar-footer a:hover { color: var(--text); background: var(--surface-hover); }
+        .sidebar-footer a.danger:hover { color: var(--red); background: rgba(248,113,113,0.06); }
+
+        /* --- MAIN --- */
+        .main {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-header { margin-bottom: 2rem; }
+
+        .page-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-top: 0.25rem;
+        }
+
+        /* --- STAT CARDS --- */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+            transition: all 0.35s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(124,106,239,0.06), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.35s;
+            pointer-events: none;
+        }
+
+        .stat-card:hover::after { opacity: 1; }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .stat-card-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card-icon.purple { background: rgba(124,106,239,0.12); }
+        .stat-card-icon.green { background: rgba(74,222,128,0.12); }
+        .stat-card-icon.orange { background: rgba(251,146,60,0.12); }
+        .stat-card-icon.blue { background: rgba(109,213,250,0.12); }
+
+        .stat-card-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        /* --- CARD --- */
+        .card {
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.1rem 1.4rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 { font-size: 0.95rem; font-weight: 700; }
+
+        .card-body { padding: 1.4rem; }
+        .card-body.empty { text-align: center; padding: 3rem; color: var(--text-muted); }
+
+        /* --- TABLE --- */
+        table { width: 100%; border-collapse: collapse; }
+
+        th {
+            text-align: left;
+            padding: 0.65rem 1rem;
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.015); }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.55rem;
+            border-radius: 50px;
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        .tag-new { background: rgba(74,222,128,0.12); color: var(--green); }
+        .tag-read { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+
+        .actions { display: flex; gap: 0.4rem; }
+
+        .actions .btn { padding: 0.4rem 0.6rem; }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 2rem;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.35s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            padding: 1.4rem 1.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 { font-size: 1.05rem; font-weight: 700; }
+
+        .modal-close {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover { color: var(--text); border-color: var(--border-hover); }
+
+        .modal-body { padding: 1.4rem 1.5rem; }
+
+        .modal-footer {
+            padding: 0 1.5rem 1.4rem;
+            display: flex;
+            gap: 0.6rem;
+            justify-content: flex-end;
+        }
+
+        /* --- ICONS --- */
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .icon-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.85rem;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: border-color 0.3s;
+        }
+
+        .icon-item:hover { border-color: rgba(124,106,239,0.2); }
+
+        .icon-preview {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            background: rgba(124,106,239,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .icon-preview img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+        .icon-preview .emoji { width: 1.5em; height: 1.5em; }
+
+        .icon-info { flex: 1; min-width: 0; }
+        .icon-info-label { font-size: 0.8rem; font-weight: 600; margin-bottom: 0.2rem; }
+        .icon-info-sub { font-size: 0.68rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+
+        .icon-btns { display: flex; gap: 0.35rem; }
+
+        .icon-btn {
+            padding: 0.25rem 0.55rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.65rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover { color: var(--text); border-color: var(--border-hover); }
+
+        /* --- SETTINGS --- */
+        .settings-section {
+            background: rgba(0,0,0,0.15);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .settings-section h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.8rem; }
+
+        .settings-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* --- TOAST --- */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--surface-solid);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1.2rem;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text);
+            z-index: 2000;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* --- EMOJI --- */
+        .emoji { width: 1.1em; height: 1.1em; vertical-align: -0.15em; display: inline-block; }
+
+        /* --- MOBILE --- */
+        .burger-btn {
+            display: none;
+            position: fixed;
+            top: 0.75rem;
+            left: 0.75rem;
+            z-index: 200;
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--surface-solid);
+            color: var(--text);
+            font-size: 1.1rem;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            .burger-btn { display: flex; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main { margin-left: 0; padding: 1rem; padding-top: 3.5rem; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+            .settings-row { grid-template-columns: 1fr; }
+            .icons-grid { grid-template-columns: 1fr; }
+        }
+
+        .page { display: none; }
+        .page.active { display: block; }
+    </style>
+</head>
+<body>
+    <!-- LOGIN -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-glow"></div>
+        <div class="login-box">
+            <div class="login-logo">abasras Admin</div>
+            <p class="login-subtitle">Войдите для управления сайтом</p>
+            <div class="login-error" id="loginError">Неверный пароль</div>
+            <div class="form-group">
+                <label>Логин</label>
+                <input type="text" id="loginUser" placeholder="admin" value="admin">
+            </div>
+            <div class="form-group">
+                <label>Пароль</label>
+                <input type="password" id="loginPass" placeholder="Введите пароль">
+            </div>
+            <button class="btn btn-primary" onclick="doLogin()" style="width:100%;justify-content:center;margin-top:0.5rem">Войти</button>
+        </div>
+    </div>
+
+    <!-- APP -->
+    <div class="app" id="app">
+        <button class="burger-btn" onclick="toggleSidebar()">☰</button>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">abasras Admin</div>
+            <nav class="sidebar-nav">
+                <a class="sidebar-link active" onclick="showPage('dashboard',this)">
+                    <span class="icon"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f4ca.svg" alt=""></span> Дашборд
+                </a>
+                <a class="sidebar-link" onclick="showPage('projects',this)">
+                    <span class="icon"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f4c1.svg" alt=""></span> Проекты
+                </a>
+                <a class="sidebar-link" onclick="showPage('messages',this)">
+                    <span class="icon"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f4ac.svg" alt=""></span> Сообщения
+                    <span class="badge" id="msgBadge" style="display:none">0</span>
+                </a>
+                <a class="sidebar-link" onclick="showPage('orders',this)">
+                    <span class="icon"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f4cb.svg" alt=""></span> Заявки
+                    <span class="badge" id="ordersBadge" style="display:none">0</span>
+                </a>
+                <a class="sidebar-link" onclick="showPage('icons',this)">
+                    <span class="icon"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f58d.svg" alt=""></span> Иконки
+                </a>
+                <a class="sidebar-link" onclick="showPage('settings',this)">
+                    <span class="icon"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/2699-fe0f.svg" alt=""></span> Настройки
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <a class="danger" onclick="doLogout()">
+                    <span class="icon"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f6aa.svg" alt=""></span> Выйти
+                </a>
+                <a href="index.html" target="_blank">
+                    <span class="icon"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f310.svg" alt=""></span> Открыть сайт
+                </a>
+            </div>
+        </aside>
+
+        <main class="main">
+            <!-- DASHBOARD -->
+            <div class="page active" id="page-dashboard">
+                <div class="page-header">
+                    <h2>Дашборд</h2>
+                    <p>Обзор вашей активности</p>
+                </div>
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Проектов</span>
+                            <div class="stat-card-icon purple"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f4c1.svg" alt=""></div>
+                        </div>
+                        <div class="stat-card-value" id="statProjects">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Сообщений</span>
+                            <div class="stat-card-icon green"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f4ac.svg" alt=""></div>
+                        </div>
+                        <div class="stat-card-value" id="statMessages">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Непрочитанных</span>
+                            <div class="stat-card-icon orange"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f4e9.svg" alt=""></div>
+                        </div>
+                        <div class="stat-card-value" id="statUnread">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <span class="stat-card-label">Посещений</span>
+                            <div class="stat-card-icon blue"><img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/1f441.svg" alt=""></div>
+                        </div>
+                        <div class="stat-card-value" id="statViews">0</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3>Последние заявки</h3></div>
+                    <div class="card-body" id="dashOrders"><div class="card-body empty">Нет заявок</div></div>
+                </div>
+            </div>
+
+            <!-- PROJECTS -->
+            <div class="page" id="page-projects">
+                <div class="page-header">
+                    <h2>Проекты</h2>
+                    <p>Управляйте вашими проектами</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Все проекты</h3>
+                        <button class="btn btn-primary btn-sm" onclick="openProjectModal()">+ Добавить</button>
+                    </div>
+                    <div class="card-body" id="projectsList"><div class="card-body empty">Нет проектов</div></div>
+                </div>
+            </div>
+
+            <!-- MESSAGES -->
+            <div class="page" id="page-messages">
+                <div class="page-header">
+                    <h2>Сообщения</h2>
+                    <p>Сообщения из формы обратной связи</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Все сообщения</h3>
+                        <button class="btn btn-danger btn-sm" onclick="clearMessages()">Очистить все</button>
+                    </div>
+                    <div class="card-body" id="messagesList"><div class="card-body empty">Нет сообщений</div></div>
+                </div>
+            </div>
+
+            <!-- ORDERS -->
+            <div class="page" id="page-orders">
+                <div class="page-header">
+                    <h2>Заявки</h2>
+                    <p>Заявки от клиентов с сайта</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Все заявки</h3>
+                        <button class="btn btn-danger btn-sm" onclick="clearOrders()">Очистить все</button>
+                    </div>
+                    <div class="card-body" id="ordersList"><div class="card-body empty">Нет заявок</div></div>
+                </div>
+            </div>
+
+            <!-- ICONS -->
+            <div class="page" id="page-icons">
+                <div class="page-header">
+                    <h2>Иконки</h2>
+                    <p>Замените иконки на сайте на свои изображения</p>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Иконки услуг</h3>
+                        <button class="btn btn-ghost btn-sm" onclick="resetIcons()">Сбросить все</button>
+                    </div>
+                    <div class="card-body"><div class="icons-grid" id="iconsGrid"></div></div>
+                </div>
+            </div>
+
+            <!-- SETTINGS -->
+            <div class="page" id="page-settings">
+                <div class="page-header">
+                    <h2>Настройки</h2>
+                    <p>Настройки админ-панели</p>
+                </div>
+                <div class="settings-section">
+                    <h4>Безопасность</h4>
+                    <div class="settings-row">
+                        <div class="form-group">
+                            <label>Новый пароль</label>
+                            <input type="password" id="newPassword" placeholder="Введите новый пароль">
+                        </div>
+                        <div class="form-group">
+                            <label>Повторите пароль</label>
+                            <input type="password" id="newPassword2" placeholder="Повторите пароль">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="changePassword()" style="margin-top:0.5rem">Сохранить пароль</button>
+                </div>
+                <div class="settings-section">
+                    <h4>Данные</h4>
+                    <p style="color:var(--text-muted); font-size:0.82rem; margin-bottom:0.8rem">Экспорт и импорт данных</p>
+                    <div style="display:flex; gap:0.6rem; flex-wrap:wrap">
+                        <button class="btn btn-ghost btn-sm" onclick="exportData()">📦 Экспорт</button>
+                        <label class="btn btn-ghost btn-sm" style="cursor:pointer">
+                            📥 Импорт
+                            <input type="file" accept=".json" onchange="importData(event)" style="display:none">
+                        </label>
+                    </div>
+                </div>
+                <div class="settings-section">
+                    <h4>Счётчик посещений</h4>
+                    <div style="display:flex; gap:0.6rem; align-items:end">
+                        <div class="form-group" style="flex:1; margin:0">
+                            <label>Посещений</label>
+                            <input type="number" id="viewsInput" value="0">
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="saveViews()" style="height:36px">Сохранить</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- PROJECT MODAL -->
+    <div class="modal-overlay" id="projectModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Новый проект</h3>
+                <button class="modal-close" onclick="closeProjectModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Название</label>
+                    <input type="text" id="projTitle" placeholder="Название проекта">
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea id="projDesc" placeholder="Описание проекта"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Технологии (через запятую)</label>
+                    <input type="text" id="projTech" placeholder="React, Node.js, PostgreSQL">
+                </div>
+                <div class="form-group">
+                    <label>Ссылка</label>
+                    <input type="text" id="projLink" placeholder="https://example.com">
+                </div>
+                <div class="form-group">
+                    <label>Статус</label>
+                    <select id="projStatus">
+                        <option value="active">Активный</option>
+                        <option value="completed">Завершён</option>
+                        <option value="draft">Черновик</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost btn-sm" onclick="closeProjectModal()">Отмена</button>
+                <button class="btn btn-primary btn-sm" onclick="saveProject()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- VIEW MODAL -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="viewModalTitle">Детали</h3>
+                <button class="modal-close" onclick="closeViewModal()">✕</button>
+            </div>
+            <div class="modal-body" id="viewModalBody"></div>
+            <div class="modal-footer">
+                <button class="btn btn-danger btn-sm" id="viewDeleteBtn">Удалить</button>
+                <button class="btn btn-ghost btn-sm" onclick="closeViewModal()">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // --- AUTH ---
+        const DEFAULT_PASS = 'zxcdota666';
+
+        function getPassword() { return localStorage.getItem('admin_pass') || DEFAULT_PASS; }
+
+        function doLogin() {
+            const pass = document.getElementById('loginPass').value;
+            if (pass === getPassword()) {
+                localStorage.setItem('admin_logged', '1');
+                showApp();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+                document.getElementById('loginPass').value = '';
+            }
+        }
+
+        document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+
+        function doLogout() {
+            localStorage.removeItem('admin_logged');
+            document.getElementById('app').classList.remove('active');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('loginPass').value = '';
+            document.getElementById('loginError').style.display = 'none';
+        }
+
+        function showApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('app').classList.add('active');
+            loadAll();
+        }
+
+        if (localStorage.getItem('admin_logged') === '1') showApp();
+
+        // --- SIDEBAR ---
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+        function showPage(name, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + name).classList.add('active');
+            document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+            if (el) el.classList.add('active');
+            document.getElementById('sidebar').classList.remove('open');
+        }
+
+        // --- DATA ---
+        function getProjects() { return JSON.parse(localStorage.getItem('admin_projects') || '[]'); }
+        function setProjects(a) { localStorage.setItem('admin_projects', JSON.stringify(a)); }
+        function getMessages() { return JSON.parse(localStorage.getItem('admin_messages') || '[]'); }
+        function setMessages(a) { localStorage.setItem('admin_messages', JSON.stringify(a)); }
+        function getOrders() { return JSON.parse(localStorage.getItem('admin_orders') || '[]'); }
+        function setOrders(a) { localStorage.setItem('admin_orders', JSON.stringify(a)); }
+        function getIcons() { return JSON.parse(localStorage.getItem('admin_icons') || '{}'); }
+        function setIcons(o) { localStorage.setItem('admin_icons', JSON.stringify(o)); }
+        function getViews() { return parseInt(localStorage.getItem('admin_views') || '0'); }
+
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+        // --- LOAD ALL ---
+        function loadAll() {
+            loadDashboard();
+            loadProjects();
+            loadMessages();
+            loadOrders();
+            loadIcons();
+            loadSettings();
+        }
+
+        // --- DASHBOARD ---
+        function loadDashboard() {
+            const projects = getProjects();
+            const messages = getMessages();
+            const orders = getOrders();
+            const unread = messages.filter(m => !m.read).length + orders.filter(o => !o.read).length;
+
+            document.getElementById('statProjects').textContent = projects.length;
+            document.getElementById('statMessages').textContent = messages.length + orders.length;
+            document.getElementById('statUnread').textContent = unread;
+            document.getElementById('statViews').textContent = getViews();
+
+            const badge = document.getElementById('msgBadge');
+            if (messages.filter(m => !m.read).length > 0) { badge.style.display = 'inline'; badge.textContent = messages.filter(m => !m.read).length; } else { badge.style.display = 'none'; }
+
+            const obadge = document.getElementById('ordersBadge');
+            if (orders.filter(o => !o.read).length > 0) { obadge.style.display = 'inline'; obadge.textContent = orders.filter(o => !o.read).length; } else { obadge.style.display = 'none'; }
+
+            const container = document.getElementById('dashOrders');
+            const recent = orders.slice(-5).reverse();
+            if (recent.length === 0) { container.innerHTML = '<div class="card-body empty">Нет заявок</div>'; return; }
+            container.innerHTML = `<table><thead><tr><th>Имя</th><th>Контакт</th><th>Дата</th><th></th></tr></thead><tbody>${recent.map(o => `<tr><td><strong>${esc(o.name)}</strong></td><td>${esc(o.contact)}</td><td style="color:var(--text-muted);font-size:0.78rem">${o.date}</td><td><span class="tag ${o.read ? 'tag-read' : 'tag-new'}">${o.read ? 'Прочитано' : 'Новое'}</span></td></tr>`).join('')}</tbody></table>`;
+        }
+
+        // --- PROJECTS ---
+        let editingId = null;
+
+        function loadProjects() {
+            const projects = getProjects();
+            const container = document.getElementById('projectsList');
+            if (projects.length === 0) { container.innerHTML = '<div class="card-body empty">Нет проектов</div>'; return; }
+            const s = { active: '<span class="tag tag-new">Активный</span>', completed: '<span class="tag" style="background:rgba(109,213,250,0.12);color:#6dd5fa">Завершён</span>', draft: '<span class="tag tag-read">Черновик</span>' };
+            container.innerHTML = `<table><thead><tr><th>Название</th><th>Технологии</th><th>Статус</th><th></th></tr></thead><tbody>${projects.map(p => `<tr><td><strong>${esc(p.title)}</strong></td><td style="color:var(--text-muted);font-size:0.8rem">${esc((p.tech||[]).join(', '))}</td><td>${s[p.status]||''}</td><td class="actions"><button class="btn btn-ghost btn-sm" onclick="editProject('${p.id}')">✏️</button><button class="btn btn-danger btn-sm" onclick="deleteProject('${p.id}')">🗑️</button></td></tr>`).join('')}</tbody></table>`;
+        }
+
+        function openProjectModal(id) {
+            editingId = id || null;
+            document.getElementById('modalTitle').textContent = id ? 'Редактировать' : 'Новый проект';
+            document.getElementById('projectModal').classList.add('active');
+            if (id) { const p = getProjects().find(x => x.id === id); if (p) { document.getElementById('projTitle').value = p.title; document.getElementById('projDesc').value = p.description; document.getElementById('projTech').value = (p.tech||[]).join(', '); document.getElementById('projLink').value = p.link || ''; document.getElementById('projStatus').value = p.status; } }
+            else { document.getElementById('projTitle').value = ''; document.getElementById('projDesc').value = ''; document.getElementById('projTech').value = ''; document.getElementById('projLink').value = ''; document.getElementById('projStatus').value = 'active'; }
+        }
+
+        function closeProjectModal() { document.getElementById('projectModal').classList.remove('active'); editingId = null; }
+        function editProject(id) { openProjectModal(id); }
+
+        function saveProject() {
+            const title = document.getElementById('projTitle').value.trim();
+            const desc = document.getElementById('projDesc').value.trim();
+            const tech = document.getElementById('projTech').value.split(',').map(s => s.trim()).filter(Boolean);
+            const link = document.getElementById('projLink').value.trim();
+            const status = document.getElementById('projStatus').value;
+            if (!title) { toast('Введите название'); return; }
+            let projects = getProjects();
+            if (editingId) { projects = projects.map(p => p.id === editingId ? { ...p, title, description: desc, tech, link, status } : p); toast('Проект обновлён'); }
+            else { projects.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2,6), title, description: desc, tech, link, status, date: new Date().toLocaleDateString('ru-RU') }); toast('Проект добавлен'); }
+            setProjects(projects); closeProjectModal(); loadProjects(); loadDashboard();
+        }
+
+        function deleteProject(id) { if (!confirm('Удалить проект?')) return; setProjects(getProjects().filter(p => p.id !== id)); loadProjects(); loadDashboard(); toast('Проект удалён'); }
+
+        // --- MESSAGES ---
+        function loadMessages() {
+            const messages = getMessages();
+            const container = document.getElementById('messagesList');
+            if (messages.length === 0) { container.innerHTML = '<div class="card-body empty">Нет сообщений</div>'; return; }
+            container.innerHTML = `<table><thead><tr><th>Имя</th><th>Тип</th><th>Сообщение</th><th>Дата</th><th></th></tr></thead><tbody>${messages.slice().reverse().map((m,i) => `<tr><td><strong>${esc(m.name)}</strong></td><td>${esc(m.type||'—')}</td><td style="color:var(--text-muted);font-size:0.8rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.message||'')}</td><td style="color:var(--text-muted);font-size:0.78rem">${m.date}</td><td class="actions"><button class="btn btn-ghost btn-sm" onclick="viewItem('message',${messages.length-1-i})">👁️</button><button class="btn btn-danger btn-sm" onclick="deleteMessage(${messages.length-1-i})">🗑️</button></td></tr>`).join('')}</tbody></table>`;
+        }
+
+        function deleteMessage(i) { if (!confirm('Удалить?')) return; const m = getMessages(); m.splice(i,1); setMessages(m); loadMessages(); loadDashboard(); toast('Удалено'); }
+        function clearMessages() { if (!confirm('Удалить все?')) return; setMessages([]); loadMessages(); loadDashboard(); toast('Очищено'); }
+
+        // --- ORDERS ---
+        function loadOrders() {
+            const orders = getOrders();
+            const container = document.getElementById('ordersList');
+            const unread = orders.filter(o => !o.read).length;
+            const badge = document.getElementById('ordersBadge');
+            if (unread > 0) { badge.style.display = 'inline'; badge.textContent = unread; } else { badge.style.display = 'none'; }
+            if (orders.length === 0) { container.innerHTML = '<div class="card-body empty">Нет заявок</div>'; return; }
+            container.innerHTML = `<table><thead><tr><th>Имя</th><th>Контакт</th><th>Задача</th><th>Дата</th><th></th></tr></thead><tbody>${orders.slice().reverse().map((o,i) => `<tr><td><strong>${esc(o.name)}</strong></td><td>${esc(o.contact)}</td><td style="color:var(--text-muted);font-size:0.8rem;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(o.message||'')}</td><td style="color:var(--text-muted);font-size:0.78rem">${o.date}</td><td class="actions"><button class="btn btn-ghost btn-sm" onclick="viewItem('order',${orders.length-1-i})">👁️</button><button class="btn btn-danger btn-sm" onclick="deleteOrder(${orders.length-1-i})">🗑️</button></td></tr>`).join('')}</tbody></table>`;
+        }
+
+        function deleteOrder(i) { if (!confirm('Удалить?')) return; const o = getOrders(); o.splice(i,1); setOrders(o); loadOrders(); loadDashboard(); toast('Удалено'); }
+        function clearOrders() { if (!confirm('Удалить все?')) return; setOrders([]); loadOrders(); loadDashboard(); toast('Очищено'); }
+
+        // --- VIEW MODAL ---
+        function viewItem(type, index) {
+            let item, arr, title;
+            if (type === 'message') { arr = getMessages(); item = arr[index]; title = 'Сообщение'; }
+            else { arr = getOrders(); item = arr[index]; title = 'Заявка'; }
+            if (!item) return;
+            item.read = true;
+            if (type === 'message') setMessages(arr); else setOrders(arr);
+
+            let html = '';
+            if (item.name) html += `<div style="margin-bottom:0.8rem"><div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.2rem">Имя</div><div>${esc(item.name)}</div></div>`;
+            if (item.contact) html += `<div style="margin-bottom:0.8rem"><div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.2rem">Контакт</div><div>${esc(item.contact)}</div></div>`;
+            if (item.type) html += `<div style="margin-bottom:0.8rem"><div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.2rem">Тип</div><div>${esc(item.type)}</div></div>`;
+            if (item.message) html += `<div style="margin-bottom:0.8rem"><div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.2rem">Текст</div><div style="color:var(--text-muted);line-height:1.6">${esc(item.message)}</div></div>`;
+            if (item.date) html += `<div><div style="font-size:0.68rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.2rem">Дата</div><div style="color:var(--text-muted)">${item.date}</div></div>`;
+
+            document.getElementById('viewModalTitle').textContent = title;
+            document.getElementById('viewModalBody').innerHTML = html;
+            document.getElementById('viewDeleteBtn').onclick = () => { if (type === 'message') deleteMessage(index); else deleteOrder(index); closeViewModal(); };
+            document.getElementById('viewModal').classList.add('active');
+            loadOrders(); loadMessages(); loadDashboard();
+        }
+
+        function closeViewModal() { document.getElementById('viewModal').classList.remove('active'); }
+
+        // --- ICONS ---
+        const ICON_KEYS = [
+            { key: 'service_web', label: 'Веб-сайты', default: '1f310' },
+            { key: 'service_bot', label: 'Чат-боты', default: '1f916' },
+            { key: 'service_app', label: 'Веб-приложения', default: '26a1' },
+            { key: 'service_ui', label: 'UI/UX Дизайн', default: '1f3a8' },
+            { key: 'service_support', label: 'Поддержка', default: '1f527' },
+            { key: 'service_api', label: 'Интеграции и API', default: '1f4ca' },
+            { key: 'contact_tg', label: 'Telegram', default: '2708-fe0f' },
+            { key: 'contact_phone', label: 'Телефон', default: '1f4de' },
+        ];
+
+        function loadIcons() {
+            const icons = getIcons();
+            document.getElementById('iconsGrid').innerHTML = ICON_KEYS.map(item => {
+                const url = icons[item.key];
+                const isCustom = !!url;
+                return `<div class="icon-item"><div class="icon-preview">${isCustom ? '<img src="'+url+'" alt="">' : '<img class="emoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@latest/assets/svg/'+item.default+'.svg" alt="">'}</div><div class="icon-info"><div class="icon-info-label">${item.label}</div><div class="icon-info-sub">${isCustom ? 'Загружено' : 'По умолчанию'}</div><div class="icon-btns"><label class="icon-btn" style="cursor:pointer">Загрузить<input type="file" accept="image/*" style="display:none" onchange="uploadIcon('${item.key}',event)"></label>${isCustom ? '<button class="icon-btn" onclick="resetIcon(\''+item.key+'\')">Сбросить</button>' : ''}</div></div></div>`;
+            }).join('');
+        }
+
+        function uploadIcon(key, e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => { const icons = getIcons(); icons[key] = ev.target.result; setIcons(icons); loadIcons(); toast('Иконка обновлена'); };
+            reader.readAsDataURL(file); e.target.value = '';
+        }
+
+        function resetIcon(key) { const icons = getIcons(); delete icons[key]; setIcons(icons); loadIcons(); toast('Сброшено'); }
+        function resetIcons() { if (!confirm('Сбросить все?')) return; localStorage.removeItem('admin_icons'); loadIcons(); toast('Все сброшены'); }
+
+        // --- SETTINGS ---
+        function loadSettings() { document.getElementById('viewsInput').value = getViews(); }
+
+        function changePassword() {
+            const p1 = document.getElementById('newPassword').value, p2 = document.getElementById('newPassword2').value;
+            if (!p1) { toast('Введите пароль'); return; }
+            if (p1 !== p2) { toast('Пароли не совпадают'); return; }
+            localStorage.setItem('admin_pass', p1);
+            document.getElementById('newPassword').value = ''; document.getElementById('newPassword2').value = '';
+            toast('Пароль изменён');
+        }
+
+        function saveViews() { localStorage.setItem('admin_views', (parseInt(document.getElementById('viewsInput').value)||0).toString()); toast('Сохранено'); loadDashboard(); }
+
+        function exportData() {
+            const data = { projects: getProjects(), messages: getMessages(), orders: getOrders(), icons: getIcons(), views: getViews(), exportDate: new Date().toISOString() };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'abasras-backup-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+            toast('Данные экспортированы');
+        }
+
+        function importData(e) {
+            const file = e.target.files[0]; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const data = JSON.parse(ev.target.result);
+                    if (data.projects) setProjects(data.projects);
+                    if (data.messages) setMessages(data.messages);
+                    if (data.orders) setOrders(data.orders);
+                    if (data.icons) setIcons(data.icons);
+                    if (data.views !== undefined) localStorage.setItem('admin_views', data.views.toString());
+                    loadAll(); toast('Данные импортированы');
+                } catch { toast('Ошибка файла'); }
+            };
+            reader.readAsText(file); e.target.value = '';
+        }
+    </script>
+</body>
+</html>
