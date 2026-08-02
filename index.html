@@ -64,141 +64,18 @@
             will-change: left, top;
         }
 
-        /* --- NAV --- */
-        nav {
-            position: fixed;
-            top: 0.8rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: auto;
-            max-width: min(90vw, 720px);
-            z-index: 1000;
-            padding: 0.4rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(24px) saturate(1.4);
-            -webkit-backdrop-filter: blur(24px) saturate(1.4);
-            background: rgba(20, 20, 30, 0.75);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 50px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
-            transition: padding 0.4s cubic-bezier(0.16,1,0.3,1), background 0.4s, box-shadow 0.4s;
-            animation: navSlideDown 0.8s cubic-bezier(0.16,1,0.3,1) both;
-        }
-
-        @keyframes navSlideDown {
-            from { opacity: 0; transform: translateX(-50%) translateY(-100%); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        nav.scrolled {
-            padding: 0.3rem 1.5rem;
-            background: rgba(20, 20, 30, 0.9);
-            box-shadow: 0 4px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
-        }
-
-        .logo {
-            font-size: 0.95rem;
-            font-weight: 900;
-            letter-spacing: -0.03em;
-            background: var(--gradient);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 4s ease infinite;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-        }
-
+        /* --- HERO --- */
         @keyframes gradientShift {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
-
-        .nav-links {
-            display: flex;
-            gap: 0.25rem;
-            list-style: none;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-            transition: color 0.3s, background 0.3s;
-        }
-
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            bottom: 6px;
-            left: 1rem;
-            right: 1rem;
-            height: 1.5px;
-            background: var(--gradient);
-            border-radius: 2px;
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
-        }
-
-        .nav-links a:hover {
-            color: var(--text);
-            background: var(--surface);
-        }
-
-        .nav-links a:hover::after {
-            transform: scaleX(1);
-        }
-
-        .burger {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-            z-index: 1001;
-            padding: 4px;
-        }
-
-        .burger span {
-            width: 22px;
-            height: 2px;
-            background: var(--text);
-            border-radius: 2px;
-            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
-            transform-origin: center;
-        }
-
-        .burger.active span:nth-child(1) {
-            transform: translateY(7px) rotate(45deg);
-        }
-
-        .burger.active span:nth-child(2) {
-            opacity: 0;
-            transform: scaleX(0);
-        }
-
-        .burger.active span:nth-child(3) {
-            transform: translateY(-7px) rotate(-45deg);
-        }
-
-        /* --- HERO --- */
         .hero {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 7rem 2rem 5rem;
+            padding: 5rem 2rem 5rem;
             position: relative;
             overflow: hidden;
         }
@@ -1113,52 +990,6 @@
         }
 
         @media (max-width: 768px) {
-            .burger { display: flex; }
-
-            nav {
-                top: 0;
-                left: 0;
-                transform: none;
-                width: 100%;
-                max-width: none;
-                padding: 0.7rem 1.2rem;
-                border-radius: 0;
-                border: none;
-                border-bottom: 1px solid var(--border);
-                box-shadow: none;
-            }
-
-            nav.scrolled { padding: 0.5rem 1.2rem; }
-
-            .nav-links {
-                position: fixed;
-                top: 0;
-                right: 0;
-                width: 280px;
-                height: 100vh;
-                height: 100dvh;
-                background: rgba(12,12,20,0.97);
-                backdrop-filter: blur(30px);
-                flex-direction: column;
-                padding: 5.5rem 2rem 2rem;
-                gap: 0.5rem;
-                transform: translateX(100%);
-                transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-                border-left: 1px solid var(--border);
-                z-index: 1001;
-            }
-
-            .nav-links.active { transform: translateX(0); }
-
-            .nav-backdrop {
-                display: none;
-                position: fixed;
-                inset: 0;
-                z-index: 999;
-            }
-            .nav-backdrop.show { display: block; }
-            .nav-links a { padding: 0.85rem 1rem; font-size: 1rem; border-radius: 12px; }
-            .nav-links a:active { background: rgba(124,106,239,0.15); }
             .stats-grid { grid-template-columns: 1fr; }
             .form-row { grid-template-columns: 1fr; }
             .process-timeline { grid-template-columns: 1fr; }
@@ -1171,7 +1002,7 @@
             .hero {
                 min-height: 100vh;
                 min-height: 100dvh;
-                padding: 6rem 1.2rem 3rem;
+                padding: 5rem 1.2rem 3rem;
                 align-items: center;
             }
 
@@ -1562,23 +1393,6 @@
     <div class="cursor-glow" id="cursorGlow"></div>
     <div class="particles" id="particles"></div>
 
-    <nav id="navbar">
-        <div class="logo">abasras</div>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="#services" onclick="closeMenu()">Услуги</a></li>
-            <li><a href="#portfolio" onclick="closeMenu()">Портфолио</a></li>
-            <li><a href="#process" onclick="closeMenu()">Процесс</a></li>
-            <li><a href="#tech" onclick="closeMenu()">Технологии</a></li>
-            <li><a href="#contact" onclick="closeMenu()">Контакты</a></li>
-        </ul>
-        <div class="burger" id="burger" onclick="toggleMenu()">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </nav>
-    <div class="nav-backdrop" id="navBackdrop" onclick="closeMenu()"></div>
-
     <section class="hero">
         <div class="hero-glow"></div>
         <div class="hero-orb hero-orb-1"></div>
@@ -1805,23 +1619,6 @@
     </footer>
 
     <script>
-        // Menu
-        function toggleMenu() {
-            document.getElementById('navLinks').classList.toggle('active');
-            document.getElementById('burger').classList.toggle('active');
-            document.getElementById('navBackdrop').classList.toggle('show');
-        }
-        function closeMenu() {
-            document.getElementById('navLinks').classList.remove('active');
-            document.getElementById('burger').classList.remove('active');
-            document.getElementById('navBackdrop').classList.remove('show');
-        }
-
-        // Nav scroll
-        window.addEventListener('scroll', () => {
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
-        });
-
         // Cursor glow with lerp
         const glow = document.getElementById('cursorGlow');
         let mx = 0, my = 0, gx = 0, gy = 0;
