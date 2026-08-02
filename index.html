@@ -67,29 +67,35 @@
         /* --- NAV --- */
         nav {
             position: fixed;
-            top: 0;
-            width: 100%;
+            top: 0.8rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            max-width: min(90vw, 720px);
             z-index: 1000;
-            padding: 0.75rem 2.5rem;
+            padding: 0.55rem 1.8rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(24px) saturate(1.4);
             -webkit-backdrop-filter: blur(24px) saturate(1.4);
-            background: rgba(6, 6, 11, 0.6);
-            border-bottom: 1px solid var(--border);
-            transition: padding 0.4s cubic-bezier(0.16,1,0.3,1), background 0.4s;
+            background: rgba(20, 20, 30, 0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 50px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
+            transition: padding 0.4s cubic-bezier(0.16,1,0.3,1), background 0.4s, box-shadow 0.4s;
             animation: navSlideDown 0.8s cubic-bezier(0.16,1,0.3,1) both;
         }
 
         @keyframes navSlideDown {
-            from { opacity: 0; transform: translateY(-100%); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateX(-50%) translateY(-100%); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
         nav.scrolled {
-            padding: 0.55rem 2.5rem;
-            background: rgba(6, 6, 11, 0.88);
+            padding: 0.45rem 1.8rem;
+            background: rgba(20, 20, 30, 0.9);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
         }
 
         .logo {
@@ -1106,10 +1112,19 @@
             .burger { display: flex; }
 
             nav {
-                padding: 0.6rem 1.2rem;
+                top: 0;
+                left: 0;
+                transform: none;
+                width: 100%;
+                max-width: none;
+                padding: 0.7rem 1.2rem;
+                border-radius: 0;
+                border: none;
+                border-bottom: 1px solid var(--border);
+                box-shadow: none;
             }
 
-            nav.scrolled { padding: 0.6rem 1.2rem; }
+            nav.scrolled { padding: 0.5rem 1.2rem; }
 
             .nav-links {
                 position: fixed;
