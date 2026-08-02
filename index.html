@@ -27,7 +27,7 @@
             --gradient: linear-gradient(135deg, #7c6aef 0%, #a89cfe 50%, #6dd5fa 100%);
         }
 
-        html { scroll-behavior: smooth; overflow-x: hidden; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -1112,7 +1112,7 @@
             .nav-links {
                 position: fixed;
                 top: 0;
-                right: 0;
+                right: -280px;
                 width: 280px;
                 height: 100vh;
                 height: 100dvh;
@@ -1121,21 +1121,11 @@
                 flex-direction: column;
                 padding: 5.5rem 2rem 2rem;
                 gap: 0.5rem;
-                transform: translateX(100%);
-                transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), visibility 0s 0.5s;
+                transition: right 0.5s cubic-bezier(0.16,1,0.3,1);
                 border-left: 1px solid var(--border);
-                visibility: hidden;
-                pointer-events: none;
-                clip-path: inset(0 0 0 100%);
             }
 
-            .nav-links.active {
-                transform: translateX(0);
-                visibility: visible;
-                pointer-events: auto;
-                clip-path: inset(0);
-                transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), visibility 0s, clip-path 0s;
-            }
+            .nav-links.active { right: 0; }
             .nav-links a { padding: 0.85rem 1rem; font-size: 1rem; border-radius: 12px; }
             .nav-links a:active { background: rgba(124,106,239,0.15); }
             .stats-grid { grid-template-columns: 1fr; }
