@@ -35,7 +35,6 @@
             color: var(--text);
             line-height: 1.6;
             overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
         }
 
         body::before {
@@ -1104,10 +1103,9 @@
         }
 
         @media (max-width: 768px) {
-            html { touch-action: pan-y; }
             .burger { display: flex; }
 
-            nav { padding: 0.85rem 1.2rem; overflow: hidden; }
+            nav { padding: 0.85rem 1.2rem; }
 
             nav.scrolled { padding: 0.6rem 1.2rem; }
 
@@ -1128,13 +1126,15 @@
                 border-left: 1px solid var(--border);
                 visibility: hidden;
                 pointer-events: none;
+                clip-path: inset(0 0 0 100%);
             }
 
             .nav-links.active {
                 transform: translateX(0);
                 visibility: visible;
                 pointer-events: auto;
-                transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), visibility 0s;
+                clip-path: inset(0);
+                transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), visibility 0s, clip-path 0s;
             }
             .nav-links a { padding: 0.85rem 1rem; font-size: 1rem; border-radius: 12px; }
             .nav-links a:active { background: rgba(124,106,239,0.15); }
