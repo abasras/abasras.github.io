@@ -1105,7 +1105,9 @@
         @media (max-width: 768px) {
             .burger { display: flex; }
 
-            nav { padding: 0.85rem 1.5rem; }
+            nav { padding: 0.85rem 1.2rem; }
+
+            nav.scrolled { padding: 0.6rem 1.2rem; }
 
             .nav-links {
                 position: fixed;
@@ -1113,6 +1115,7 @@
                 right: -100%;
                 width: 280px;
                 height: 100vh;
+                height: 100dvh;
                 background: rgba(12,12,20,0.97);
                 backdrop-filter: blur(30px);
                 flex-direction: column;
@@ -1123,12 +1126,196 @@
             }
 
             .nav-links.active { right: 0; }
-            .nav-links a { padding: 0.85rem 1rem; font-size: 1rem; }
+            .nav-links a { padding: 0.85rem 1rem; font-size: 1rem; border-radius: 12px; }
+            .nav-links a:active { background: rgba(124,106,239,0.15); }
             .stats-grid { grid-template-columns: 1fr; }
             .form-row { grid-template-columns: 1fr; }
             .process-timeline { grid-template-columns: 1fr; }
             .cta-inner { padding: 3rem 1.5rem; }
-            .hero h1 { font-size: clamp(2.2rem, 8vw, 3.2rem); }
+            .portfolio-grid { grid-template-columns: 1fr; }
+            .tech-grid { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+
+            section { padding: 4rem 1.2rem; }
+
+            .hero {
+                min-height: 100vh;
+                min-height: 100dvh;
+                padding: 6rem 1.2rem 3rem;
+                align-items: center;
+            }
+
+            .hero h1 {
+                font-size: clamp(2rem, 10vw, 2.8rem);
+                margin-bottom: 1rem;
+            }
+
+            .hero-desc {
+                font-size: 1rem;
+                margin-bottom: 2rem;
+                line-height: 1.6;
+            }
+
+            .hero-badge {
+                font-size: 0.72rem;
+                padding: 0.4rem 0.9rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+
+            .btn {
+                padding: 1rem 1.5rem;
+                font-size: 0.95rem;
+                justify-content: center;
+                border-radius: 14px;
+                min-height: 50px;
+            }
+
+            .stats-section { padding: 0 1.2rem 4rem; }
+
+            .stat-card { padding: 1.8rem 1.2rem; }
+
+            .stat-number { font-size: 2.2rem; }
+
+            .stat-label { font-size: 0.8rem; }
+
+            .section-header { margin-bottom: 2rem; }
+
+            .section-title { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+
+            .section-desc { font-size: 0.9rem; }
+
+            .service-card { padding: 2rem 1.5rem; }
+
+            .service-icon { width: 46px; height: 46px; }
+
+            .service-card h3 { font-size: 1.05rem; }
+
+            .service-card p { font-size: 0.85rem; }
+
+            .service-tags span { font-size: 0.68rem; padding: 0.3rem 0.65rem; }
+
+            .portfolio-card { padding: 1.5rem; }
+
+            .portfolio-card h3 { font-size: 1.05rem; }
+
+            .step { padding: 2rem 1.5rem; }
+
+            .step-number { font-size: 2.2rem; }
+
+            .step h4 { font-size: 0.95rem; }
+
+            .step p { font-size: 0.82rem; }
+
+            .tech-grid { grid-template-columns: repeat(2, 1fr); }
+
+            .tech-pill { padding: 0.6rem 0.7rem; font-size: 0.75rem; }
+
+            .contact-form-box { padding: 1.5rem; }
+
+            .form-group input,
+            .form-group textarea {
+                padding: 0.9rem 1rem;
+                font-size: 16px;
+                border-radius: 12px;
+            }
+
+            .btn-submit { min-height: 52px; font-size: 1rem; }
+
+            footer { padding: 2rem 1.2rem; font-size: 0.78rem; }
+
+            .cursor-glow { display: none; }
+
+            .hero-orb { filter: blur(60px); }
+
+            .hero-orb-1 { width: 200px; height: 200px; }
+            .hero-orb-2 { width: 180px; height: 180px; }
+
+            body::before { background-size: 40px 40px; }
+        }
+
+        @media (max-width: 380px) {
+            .hero h1 { font-size: 1.8rem; }
+            .hero-desc { font-size: 0.9rem; }
+            .btn { padding: 0.9rem 1.2rem; font-size: 0.9rem; }
+            .tech-grid { grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
+            .tech-pill { font-size: 0.7rem; padding: 0.5rem 0.6rem; }
+        }
+
+        /* Safe area for notched phones */
+        @supports (padding: env(safe-area-inset-top)) {
+            nav {
+                padding-left: calc(1.2rem + env(safe-area-inset-left));
+                padding-right: calc(1.2rem + env(safe-area-inset-right));
+            }
+            .nav-links {
+                padding-top: calc(5.5rem + env(safe-area-inset-top));
+            }
+            footer {
+                padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+            }
+        }
+
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .service-card:hover::before,
+            .service-card:hover::after,
+            .service-card:hover .service-icon {
+                transform: none;
+                box-shadow: none;
+            }
+            .service-card:active {
+                background: rgba(124,106,239,0.05);
+            }
+            .portfolio-card:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            .portfolio-card:active {
+                border-color: rgba(124,106,239,0.2);
+            }
+            .tech-pill:hover {
+                transform: none;
+                box-shadow: none;
+            }
+            .tech-pill:active {
+                transform: scale(0.96);
+            }
+            .btn:hover {
+                transform: none;
+            }
+            .btn:active {
+                transform: scale(0.97);
+            }
+            .contact-link:hover {
+                transform: none;
+            }
+            .contact-link:active {
+                background: rgba(124,106,239,0.06);
+            }
+        }
+
+        /* Reduce motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-delay: 0ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Landscape phone */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .hero {
+                min-height: auto;
+                padding: 5rem 1.2rem 2rem;
+            }
+            .hero h1 { margin-bottom: 0.5rem; }
+            .hero-desc { margin-bottom: 1.5rem; }
+            .btn-group { flex-direction: row; }
         }
 
         /* --- PARTICLES --- */

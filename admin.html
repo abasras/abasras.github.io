@@ -673,12 +673,53 @@
 
         @media (max-width: 768px) {
             .burger-btn { display: flex; }
-            .sidebar { transform: translateX(-100%); }
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+                z-index: 200;
+            }
             .sidebar.open { transform: translateX(0); }
-            .main { margin-left: 0; padding: 1rem; padding-top: 3.5rem; }
+            .sidebar-backdrop {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                backdrop-filter: blur(4px);
+                z-index: 199;
+            }
+            .sidebar-backdrop.show { display: block; }
+            .main {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 4rem;
+            }
             .stats-row { grid-template-columns: 1fr 1fr; }
             .settings-row { grid-template-columns: 1fr; }
             .icons-grid { grid-template-columns: 1fr; }
+            .page-header h2 { font-size: 1.4rem; }
+            .page-header p { font-size: 0.85rem; }
+            .modal-box { width: 95%; max-height: 85vh; margin: 5vh auto; border-radius: 16px; }
+            .card, .stat-card { border-radius: 14px; }
+            table { font-size: 0.8rem; }
+            th, td { padding: 0.6rem 0.8rem; }
+            .btn { min-height: 44px; }
+            .form-group input, .form-group textarea, .form-group select {
+                font-size: 16px;
+                padding: 0.85rem 1rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .stats-row { grid-template-columns: 1fr; }
+            .stat-card-value { font-size: 1.8rem; }
+            .sidebar { width: 260px; }
+        }
+
+        @supports (padding: env(safe-area-inset-top)) {
+            .main {
+                padding-left: calc(1rem + env(safe-area-inset-left));
+                padding-right: calc(1rem + env(safe-area-inset-right));
+            }
         }
 
         .page { display: none; }
@@ -708,6 +749,7 @@
     <!-- APP -->
     <div class="app" id="app">
         <button class="burger-btn" onclick="toggleSidebar()">☰</button>
+        <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-logo">abasras Admin</div>
@@ -984,7 +1026,10 @@
         if (localStorage.getItem('admin_logged') === '1') showApp();
 
         // --- SIDEBAR ---
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarBackdrop').classList.toggle('show');
+        }
 
         function showPage(name, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -992,6 +1037,7 @@
             document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
             if (el) el.classList.add('active');
             document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarBackdrop').classList.remove('show');
         }
 
         // --- DATA ---
